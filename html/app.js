@@ -101,6 +101,7 @@ const playerHud = {
     data() {
         return {
             health: 0,
+			stamina: 0,
             armor: 0,
             hunger: 0,
             thirst: 0,
@@ -109,6 +110,7 @@ const playerHud = {
             show: false,
             showVoice: true,
             showHealth: true,
+			showStamina: true,
             showArmor: true,
             showHunger: true,
             showThirst: true,
@@ -131,6 +133,7 @@ const playerHud = {
         hudTick(data) {
             this.show = data.show;
             this.health = data.health;
+			this.stamina = data.stamina;
             this.armor = data.armor;
             this.hunger = data.hunger;
             this.thirst = data.thirst;
@@ -140,6 +143,11 @@ const playerHud = {
                 this.showHealth = false;
             } else {
                 this.showHealth = true;
+            }
+            if (data.stamina >= 100) {
+                this.showStamina = false;
+            } else {
+                this.showStamina = true;
             }
             if (data.armor <= 0) {
                 this.showArmor = false;
@@ -161,6 +169,11 @@ const playerHud = {
             } else {
                 this.showStress = true;
             }
+			if (data.voice == 1) {
+				this.talkingColor = "#FFFF00";
+			} else {
+				this.talkingColor = "#FFFFFF";
+			}
         }
     }
 }
