@@ -1,9 +1,6 @@
-local QBCore = exports['qbr-core']:GetCoreObject()
+
 local speed = 0.0
 local radarActive = false
-local voice = 0
-local health = 0
-local stamina = 0
 local stress = 0
 local hunger = 100
 local thirst = 100
@@ -46,20 +43,19 @@ Citizen.CreateThread(function()
         if LocalPlayer.state['isLoggedIn'] then
             local show = true
             local player = PlayerPedId()
-            local playerid = PlayerId()            
+            local playerid = PlayerId()
             if IsPauseMenuActive() then
                 show = false
-            end			
+            end	
             SendNUIMessage({
                 action = 'hudtick',
                 show = show,
-                health = GetAttributeCoreValue(player, 0),
-				stamina = GetAttributeCoreValue(player, 1),
+                health = GetEntityHealth(player) / 3, -- health in red dead is 300 so dividing by 3 makes it 100 here
                 armor = Citizen.InvokeNative(0x2CE311A7, player),
                 thirst = thirst,
                 hunger = hunger,
                 stress = stress,
-                voice = Citizen.InvokeNative(0x33EEF97F, playerid),
+				voice = Citizen.InvokeNative(0x33EEF97F, playerid)
             })
         else
             SendNUIMessage({
@@ -73,10 +69,13 @@ end)
 Citizen.CreateThread(function()
     while true do
         Wait(1)
-		SetMinimapType(1)
+          if IsPedOnMount(PlayerPedId()) or IsPedOnVehicle(PlayerPedId()) then
+            SetMinimapType(1)
+          else
+              SetMinimapType(3)
+          end
      end
-end)
-
+  end)
 -- Money HUD
 
 RegisterNetEvent('hud:client:ShowAccounts')
@@ -98,7 +97,7 @@ end)
 
 RegisterNetEvent('hud:client:OnMoneyChange')
 AddEventHandler('hud:client:OnMoneyChange', function(type, amount, isMinus)
-    QBCore.Functions.GetPlayerData(function(PlayerData)
+    exports['qbr-core']:GetPlayerData(function(PlayerData)
         cashAmount = PlayerData.money['cash']
         bankAmount = PlayerData.money['bank']
     end)
@@ -198,16 +197,4 @@ function GetEffectInterval(stresslevel)
         end
     end
     return retval
-end
-
-function GetCurrentTemperature()
-    local player = PlayerPedId()
-    local coords = GetEntityCoords(player)
-    ShouldUseMetricTemperature()
-    return round(GetTemperatureAtCoords(coords.x, coords.y, coords.z), 1)
-end
-
-function round(num, numDecimalPlaces)
-    local mult = 10 ^ (numDecimalPlaces or 0)
-    return math.floor(num * mult + 0.5) / mult
 end
