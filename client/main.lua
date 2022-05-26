@@ -1,4 +1,4 @@
-local QBCore = exports['qbr-core']:GetCoreObject()
+
 local speed = 0.0
 local radarActive = false
 local voice = 0
@@ -98,7 +98,7 @@ end)
 
 RegisterNetEvent('hud:client:OnMoneyChange')
 AddEventHandler('hud:client:OnMoneyChange', function(type, amount, isMinus)
-    QBCore.Functions.GetPlayerData(function(PlayerData)
+    exports['qbr-core']:GetPlayerData(function(PlayerData)
         cashAmount = PlayerData.money['cash']
         bankAmount = PlayerData.money['bank']
     end)
